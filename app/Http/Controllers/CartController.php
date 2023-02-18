@@ -3,23 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\AdvertiseCarousel;
 
-class AdvertiseCarouselController extends Controller
+class CartController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response $response
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $advertiseCarousel = AdvertiseCarousel::all();
-
-        // dd($advertiseCarousel);
-        return response()->json([
-            "message" => "here we are",
-        ]);
+        //
     }
 
     /**

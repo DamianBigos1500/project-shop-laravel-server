@@ -2,24 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateUserRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\AdvertiseCarousel;
 
-class AdvertiseCarouselController extends Controller
+class UsersController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response $response
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $advertiseCarousel = AdvertiseCarousel::all();
-
-        // dd($advertiseCarousel);
-        return response()->json([
-            "message" => "here we are",
-        ]);
+        // $users = User::with('roles')->get();
+        $users = User::paginate(10);
+        return response(["users" => $users]);
     }
 
     /**
@@ -72,9 +70,11 @@ class AdvertiseCarouselController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        //
+        $userValidated = $request->validated();
+
+        $user->update([]);
     }
 
     /**

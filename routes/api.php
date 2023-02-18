@@ -1,6 +1,8 @@
 <?php
 
-use App\Http\Controllers\advertiseCarouselController;
+use App\Http\Controllers\AdvertiseCarouselController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ProductsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,4 +22,10 @@ Route::middleware(['auth:sanctum, "verified'])->get('/user', function (Request $
 });
 
 
-Route::get("/advertiseCarousel", [AdvertiseCarouselController::class, 'index']);
+
+Route::middleware(['auth', 'verified'])->group(function () {
+});
+
+Route::resource("advertiseCarousel", AdvertiseCarouselController::class)->only(['index', 'store', 'update', 'destroy',]);
+Route::resource('users', UsersController::class)->only(['index', 'store', 'update', 'destroy',]);
+Route::resource('products', ProductsController::class)->only(['index', 'store', 'show', 'update', 'destroy',]);

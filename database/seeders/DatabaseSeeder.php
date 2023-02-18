@@ -3,8 +3,12 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Database\Seeders\PermissionsTableSeeder;
+use Database\Seeders\RolesTableSeeder;
+use Database\Seeders\PermissionRoleTableSeeder;
+use Database\Seeders\UsersTableSeeder;
+use Database\Seeders\RoleUserTableSeeder;
 use Illuminate\Database\Seeder;
-use  Database\Seeders\UserSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,16 +19,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
-
         $this->call([
-            UserSeeder::class
+            UsersTableSeeder::class,
         ]);
-
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }
