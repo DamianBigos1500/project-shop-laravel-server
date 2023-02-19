@@ -85,11 +85,13 @@ class ProductsController extends Controller
     public function destroy(Product $product): JsonResponse
     {
         try {
-            $images = $product->images();
+            $images = $product->images;
 
             foreach ($images as $image) {
-                Storage::delete($image);
+                Storage::delete($image->image_path);
             }
+            $product->delete();
+
             return response()->json([
                 'product' => $product
             ], 202);
