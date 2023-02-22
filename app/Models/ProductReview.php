@@ -4,18 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Product;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ProductImage extends Model
+class ProductReview extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        "image_path",
+        "user_id",
         "product_id",
+        "review_text",
     ];
 
-    public function products()
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(User::class);
     }
 }

@@ -3,11 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Database\Seeders\PermissionsTableSeeder;
-use Database\Seeders\RolesTableSeeder;
-use Database\Seeders\PermissionRoleTableSeeder;
 use Database\Seeders\UsersTableSeeder;
-use Database\Seeders\RoleUserTableSeeder;
+use Database\Seeders\ProductsTableSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -21,6 +18,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UsersTableSeeder::class,
+            ProductsTableSeeder::class
         ]);
     }
 }

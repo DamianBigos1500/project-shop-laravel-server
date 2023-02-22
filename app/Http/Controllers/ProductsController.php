@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpsertProductRequest;
 use App\Models\Product;
-use App\Models\ProductImage;
+use App\Models\Image;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,8 +19,10 @@ class ProductsController extends Controller
      */
     public function index(): JsonResponse
     {
+
         return response()->json([
-            'products' => Product::with("images")->paginate(10)
+            'products' => Product::with("images")->paginate(10),
+
         ], 200);
     }
 
@@ -40,7 +42,7 @@ class ProductsController extends Controller
         if ($request->hasFile('images')) {
             foreach ($request->images as $image) {
                 $imagePath = $image->store('images/products');
-                ProductImage::create(["image_path" => $imagePath, 'product_id' => $product->id]);
+                Image::create(["filename" => $imagePath, 'product_id' => $product->id]);
             }
         }
 
@@ -88,7 +90,7 @@ class ProductsController extends Controller
             $images = $product->images;
 
             foreach ($images as $image) {
-                Storage::delete($image->image_path);
+                Storage::delete($image->filename);
             }
             $product->delete();
 
