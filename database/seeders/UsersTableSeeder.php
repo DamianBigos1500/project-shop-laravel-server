@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -24,7 +25,8 @@ class UsersTableSeeder extends Seeder
                 'email_verified_at' => now(),
                 'password' => bcrypt("12345678"),
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
+                // "role" => UserRole::USER
             ],
             [
                 "id" => 2,

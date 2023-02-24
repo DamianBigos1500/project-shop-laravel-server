@@ -32,7 +32,6 @@ return new class extends Migration
             $table->dropColumn('surname');
             $table->dropColumn('phone_number');
             $table->dropColumn('role');
-
         });
     }
 };

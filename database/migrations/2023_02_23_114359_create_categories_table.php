@@ -13,10 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('image_carousels', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string("name", 255);
-            $table->string("link", 255);
+            $table->string("title");
+            $table->string("category_code");
+            $table->integer('parent_id');
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('advertise_carousels');
+        Schema::dropIfExists('categories');
     }
 };

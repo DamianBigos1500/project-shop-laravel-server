@@ -5,8 +5,8 @@ namespace App\Enums;
 
 class UserRole
 {
-  const ADMIN = 'admin';
-  const USER = 'user';
+  const ADMIN = 'ADMIN';
+  const USER = 'USER';
 
   const TYPES = [
     self::ADMIN,

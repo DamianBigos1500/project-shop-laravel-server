@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string("name", 500);
             $table->string("slug", 500);
-            $table->string("code", 200);
+            $table->string("product_code", 200);
             $table->text("short_description");
             $table->text("long_description");
             $table->decimal("regular_price");

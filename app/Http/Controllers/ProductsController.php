@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpsertProductRequest;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Image;
 use Exception;
@@ -17,13 +18,38 @@ class ProductsController extends Controller
      *
      * @return JsonResponse
      */
+
     public function index(): JsonResponse
     {
-
         return response()->json([
             'products' => Product::with("images")->paginate(10),
-
         ], 200);
+    }
+
+    /**
+     * Display a listing of paths.
+     *
+     * @return JsonResponse
+     */
+    public function getProductPaths(): JsonResponse
+    {
+        return response()->json([
+            'productsPaths' => Product::select("id")->get()->map(fn ($prod) => ["params" => ["id" => strval($prod->id)]]),
+        ], 200);
+    }
+
+    /**
+     * Display a listing of paths.
+     *
+     * @return JsonResponse
+     */
+    public function create(): JsonResponse
+    {
+
+
+        return response()->json([
+            'categories' => Category::all()
+        ]);
     }
 
     /**
@@ -60,7 +86,7 @@ class ProductsController extends Controller
     public function show(Product $product): JsonResponse
     {
         return response()->json([
-            'product' => $product
+            'product' => Product::with("images")->find($product->id)
         ], 200);
     }
 

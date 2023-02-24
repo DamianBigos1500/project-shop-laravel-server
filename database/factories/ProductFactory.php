@@ -23,7 +23,7 @@ class ProductFactory extends Factory
         return [
             'name' => $productName,
             'slug' => $slug,
-            'code' => $this->faker->text(200),
+            'product_code' => $this->faker->text(200),
             'short_description' => $this->faker->text(100),
             'long_description' => $this->faker->text(400),
             'regular_price' => $this->faker->numberBetween(100, 500),
