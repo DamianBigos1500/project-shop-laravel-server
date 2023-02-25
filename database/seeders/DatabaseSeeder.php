@@ -6,6 +6,7 @@ namespace Database\Seeders;
 use Database\Seeders\UsersTableSeeder;
 use Database\Seeders\ProductsTableSeeder;
 use Database\Seeders\CategoriesTableSeeder;
+use Database\Seeders\CategoryImageSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -20,7 +21,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UsersTableSeeder::class,
             ProductsTableSeeder::class,
-            CategoriesTableSeeder::class
+            CategoriesTableSeeder::class,
+            CategoryImageSeeder::class,
+            ProductCategorySeeder::class
         ]);
     }
 }

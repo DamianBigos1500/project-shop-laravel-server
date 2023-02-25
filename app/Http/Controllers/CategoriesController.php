@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use  \Illuminate\Http\JsonResponse;
 
@@ -16,7 +17,7 @@ class CategoriesController extends Controller
     public function index()
     {
         return response()->json([
-            'categories' => Category::all()
+            'categories' => Category::where("parent_id", 0)->with("children")->get()
         ]);
     }
 
@@ -44,11 +45,40 @@ class CategoriesController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function show($id)
     {
         //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  string  $slug
+     * @return JsonResponse
+     */
+    public function getCategoryBySlug(string $slug)
+    {
+        return response()->json([
+            "category" => Category::where("category_slug", $slug)->with("children.categoryImage")->first()
+        ]);
+    }
+
+    /**
+     * Get products by category id
+     *
+     * @param  string $slug
+     * @return JsonResponse
+     */
+    public function getProductsByCategory(string $slug)
+    {
+        $category = Category::where('category_slug', $slug)->firstOrFail();
+        $products = Product::where("category_id", $category->id)->with("images")->paginate(18);
+
+        return response()->json([
+            "products" =>  $products
+        ]);
     }
 
     /**

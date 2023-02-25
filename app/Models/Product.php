@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Models\Image;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Product extends Model
@@ -29,8 +31,13 @@ class Product extends Model
         return $this->morphMany(Image::class, 'imageable');
     }
 
-    public function productReviews()
+    public function productReviews(): HasMany
     {
         return $this->hasMany(ProductReview::class);
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(ProductReview::class);
     }
 }

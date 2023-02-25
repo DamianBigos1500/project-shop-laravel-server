@@ -23,6 +23,9 @@ use Illuminate\Support\Facades\Route;
 Route::get("products-paths", [ProductsController::class, "getProductPaths"]);
 Route::resource('products', ProductsController::class)->only(['index', 'show']);
 Route::resource('categories', CategoriesController::class)->only(['index']);
+Route::get('category-slug/{slug}', [CategoriesController::class, 'getCategoryBySlug']);
+Route::get('products-category/{slug}', [CategoriesController::class, 'getProductsByCategory']);
+
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get("user", function (Request $request) {

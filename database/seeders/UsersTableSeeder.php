@@ -26,7 +26,6 @@ class UsersTableSeeder extends Seeder
                 'password' => bcrypt("12345678"),
                 'created_at' => now(),
                 'updated_at' => now(),
-                // "role" => UserRole::USER
             ],
             [
                 "id" => 2,
