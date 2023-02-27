@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Helpers\Cart;
-use App\Models\CartItem;
 use App\Models\Product;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
@@ -19,18 +18,20 @@ class CartController extends Controller
      */
     public function index()
     {
-        $cartItems = Cart::getCartItems();
+        $cart = new CartService();
+        $cartItems = $cart->getCartItems();
+
 
         $ids = Arr::pluck($cartItems, 'product_id');
         $products = Product::query()->whereIn('id', $ids)->get();
-        $cartItems = Arr::keyBy($cartItems, 'product_id');
+        // $cartItems = Arr::keyBy($cartItems, 'product_id');
 
-        $total = 0;
-        foreach ($products as $product) {
-            $total += $product->price * $cartItems[$product->id]['quantity'];
-        }
+        // $total = 0;
+        // foreach ($products as $product) {
+        //     $total += $product->price * $cartItems[$product->id]['quantity'];
+        // }
 
-        return response()->json(compact("cartItems", "products", "total"));
+        return response()->json(compact("cartItems"));
     }
 
     /**
@@ -46,56 +47,22 @@ class CartController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Request  $request
      * @param  Product $product
      * @return JsonResponse
      */
-    public function store(Request $request, Product $product)
+    public function store(Request $request): JsonResponse
     {
-        $quantity = $request->post('quantity', 1);
+        $cart = new CartService();
+        $product = Product::find($request->product_id);
 
-        $user = $request->user();
-        if ($user) {
-            $cartItem = CartItem::where(['user_id' => $user->id, 'product_id' => $product->id])->first();
-
-            if ($cartItem) {
-                $cartItem->quantity += $quantity;
-            } else {
-                $data = [
-                    'user_id' => $request->user()->id,
-                    'product_id' => $product->id,
-                    "quantity" => $quantity
-                ];
-                CartItem::create($data);
-            }
-
-            return response()->json([
-                'count' => Cart::getCartItemsCount()
-            ]);
-        } else {
-            $cartItems = json_decode($request->cookie('cart_items', '[]'), true);
-            $productFound = false;
-            foreach ($cartItems as &$item) {
-                if ($item['product_id'] === $product->id) {
-                    $item['quantity'] += $quantity;
-                    $productFound = true;
-                    break;
-                }
-            }
-            if (!$productFound) {
-                $cartItems[] = [
-                    'user_id' => null,
-                    'product_id' => $product->id,
-                    'quantity' => $quantity,
-                    'price' => $product->price
-                ];
-            }
-            Cookie::queue('cart_items', json_encode($cartItems), 60 * 24 * 30);
-
-            return response()->json([
-                'count' => Cart::getCountFromItems($cartItems)
-            ]);
+        if ($product) {
+            $cart->addCartItem($product->id, $request->quantity);
         }
+
+
+        return response()->json([
+            "cartItems" => $cart->getCartItems(),
+        ]);
     }
 
     /**

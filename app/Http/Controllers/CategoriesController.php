@@ -73,11 +73,12 @@ class CategoriesController extends Controller
      */
     public function getProductsByCategory(string $slug)
     {
-        $category = Category::where('category_slug', $slug)->firstOrFail();
+        $category = Category::where('category_slug', $slug)->with("parent")->firstOrFail();
         $products = Product::where("category_id", $category->id)->with("images")->paginate(18);
 
         return response()->json([
-            "products" =>  $products
+            "products" =>  $products,
+            "category" =>  $category
         ]);
     }
 
