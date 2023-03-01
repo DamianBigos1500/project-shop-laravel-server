@@ -86,7 +86,7 @@ class ProductsController extends Controller
     public function show(Product $product): JsonResponse
     {
         return response()->json([
-            'product' => Product::with("images")->find($product->id)
+            'product' => Product::with(["images", "category" => ['parent']])->find($product->id)
         ], 200);
     }
 

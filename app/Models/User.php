@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -53,8 +54,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(UserDetails::class);
     }
 
-    // public function profileImage(): MorphOne
-    // {
-    //     return $this->morphOne(Image::class, 'imageable');
-    // }
+    public function FavoutitCollection(): HasMany
+    {
+        return $this->hasMany(UserDetails::class);
+    }
 }

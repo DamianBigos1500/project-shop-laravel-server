@@ -19,6 +19,7 @@ class ProductFactory extends Factory
     {
         $productName = $this->faker->unique()->words($nb = 6, $asText = true);
         $slug = Str::slug($productName, '-');
+        $featured = rand(0, 120) < 30 ? true : false;
 
         return [
             'name' => $productName,
@@ -30,6 +31,7 @@ class ProductFactory extends Factory
             // 'discount_price' => 3343,
             'is_available' => true,
             'quantity' =>  $this->faker->numberBetween(10, 50),
+            'featured' =>  $featured,
             // 'deleted_by' => null,
             'created_at' => now(),
             'updated_at' => now()

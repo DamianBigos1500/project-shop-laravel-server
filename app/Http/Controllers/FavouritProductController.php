@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateUserRequest;
-use App\Models\User;
 use Illuminate\Http\Request;
 
-class UsersController extends Controller
+class FavouritProductController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,9 +13,7 @@ class UsersController extends Controller
      */
     public function index()
     {
-        // $users = User::with('roles')->get();
-        $users = User::paginate(10);
-        return response(["users" => $users]);
+        //
     }
 
     /**
@@ -70,12 +66,9 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(Request $request, $id)
     {
-        $userValidated = $request->validated();
-
-        $user->update([]);
-        return response();
+        //
     }
 
     /**
@@ -87,16 +80,5 @@ class UsersController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function getUser(Request $request)
-    {
-        return $request->user();
     }
 }

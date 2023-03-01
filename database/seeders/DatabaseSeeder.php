@@ -7,6 +7,7 @@ use Database\Seeders\UsersTableSeeder;
 use Database\Seeders\ProductsTableSeeder;
 use Database\Seeders\CategoriesTableSeeder;
 use Database\Seeders\CategoryImageSeeder;
+use Database\Seeders\FeaturedProductsColumnSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -23,7 +24,8 @@ class DatabaseSeeder extends Seeder
             ProductsTableSeeder::class,
             CategoriesTableSeeder::class,
             CategoryImageSeeder::class,
-            ProductCategorySeeder::class
+            ProductCategorySeeder::class,
+            // FeaturedProductsColumnSeeder::class,
         ]);
     }
 }

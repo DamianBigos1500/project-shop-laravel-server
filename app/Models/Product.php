@@ -38,6 +38,6 @@ class Product extends Model
 
     public function category(): BelongsTo
     {
-        return $this->belongsTo(ProductReview::class);
+        return $this->belongsTo(Category::class);
     }
 }
