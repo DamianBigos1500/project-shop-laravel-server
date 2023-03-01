@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\CartItem;
+use App\Models\Product;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
@@ -27,13 +29,25 @@ class CartService
     );
   }
 
+  public function getCartProducts()
+  {
+    $ids = Arr::pluck($this->cartItems, 'product_id');
+    return $products = Product::whereIn('id', $ids)->get()->map(function ($product) {
+      return [
+        'id' => $product->id,
+        'name' => $product->name,
+        'regular_price' => $product->regular_price,
+        'discount_price' => $product->discount_price,
+        'picture' => $product->images[0]->filename,
+        'quantity' => $this->cartItems->where("product_id", $product->id)->first()["quantity"]
+      ];
+    });
+  }
+
   public function getCartItems()
   {
     if ($this->user) {
-      return $this->getDatabaseCartItems()->map(fn ($item) => [
-        "product_id" => $item->product_id,
-        "quantity" => $item->quantity
-      ]);
+      return $this->getDatabaseCartItems();
     } else {
       return $this->getCookieCartItems();
     }
@@ -44,7 +58,10 @@ class CartService
     return CartItem::where(
       "user_id",
       $this->user->id
-    )->get();
+    )->get()->map(fn ($item) => [
+      "product_id" => $item->product_id,
+      "quantity" => $item->quantity
+    ]);
   }
 
   public function getCookieCartItems()
@@ -56,46 +73,57 @@ class CartService
   {
     if ($this->user) {
       $cartItem = CartItem::where(['user_id' => $this->user->id, "product_id" => $productId])->first();
-      if ($cartItem) {
-        $cartItem->quantity = $quantity;
-        $cartItem->save();
-      } else {
-        CartItem::create(['user_id' => $this->user->id, "product_id" => $productId, "quantity" => $quantity]);
-      }
+      $cartItem ? $cartItem->delete() : null;
+      $this->saveCartItemInDatabase($productId, $quantity);
     } else {
       $items = $this->cartItems;
-      $cartItem = $items->where("product_id", $productId)->first();
-
-      if ($cartItem) {
-        $items =  $items->reject(fn ($item) => $productId == $item["product_id"]);
-      }
-
+      $items = $items->reject(fn ($item) => $productId == $item["product_id"]);
       $items->add(["product_id" => $productId, "quantity" => $quantity]);
-
-      Cookie::queue('cart_items', $items, 60 * 24 * 30);
+      $this->saveCartItemInCookie($items);
     }
+    return new CartService();
   }
-
-
 
   public function moveCartIntoDatabase()
   {
-    $request = \request();
-    $cartItems = $this->getCookieCartItems();
-    $dbCartItems = CartItem::whereIn(['user_id', "=", $this->user->id])->delete();
+    if ($this->user) {
+      $this->resetCartDatabase();
+      $items = $this->getCookieCartItems();
 
-    $newCartItems = [];
+      foreach ($items as $item) {
+        $this->saveCartItemInDatabase($item["product_id"], $item["quantity"]);
+      }
 
-    foreach ($cartItems as $cartItem) {
-      $newCartItems[] = [
-        "user_id" => $request->user()->id,
-        "product_id" => $cartItem["product_id"],
-        "quantity" => $cartItem['quantity'],
-      ];
+      $this->resetCartCookie();
     }
+  }
 
-    if (!empty($newCartItems)) {
-      CartItem::insert($newCartItems);
+  public function clearCart()
+  {
+    if ($this->user) {
+      $this->resetCartDatabase();
+    } else {
+      $this->resetCartCookie();
     }
+  }
+
+  private function resetCartDatabase()
+  {
+    $items = CartItem::where('user_id', "=", $this->user->id);
+    $items ? $items->delete() : null;
+  }
+
+  private function resetCartCookie()
+  {
+    Cookie::forget('cart_items');
+  }
+
+  private function saveCartItemInDatabase($productId, $quantity)
+  {
+    CartItem::create(['user_id' => $this->user->id, "product_id" => $productId, "quantity" => $quantity]);
+  }
+  private function saveCartItemInCookie($items)
+  {
+    Cookie::queue('cart_items', $items, 60 * 24 * 30);
   }
 }

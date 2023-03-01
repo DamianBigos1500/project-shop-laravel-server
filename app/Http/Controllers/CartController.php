@@ -7,7 +7,6 @@ use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Cookie;
 
 class CartController extends Controller
 {
@@ -22,8 +21,6 @@ class CartController extends Controller
         $cartItems = $cart->getCartItems();
 
 
-        $ids = Arr::pluck($cartItems, 'product_id');
-        $products = Product::query()->whereIn('id', $ids)->get();
         // $cartItems = Arr::keyBy($cartItems, 'product_id');
 
         // $total = 0;
@@ -34,20 +31,11 @@ class CartController extends Controller
         return response()->json(compact("cartItems"));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return JsonResponse
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Product $product
+     * @param  Request $request
      * @return JsonResponse
      */
     public function store(Request $request): JsonResponse
@@ -55,58 +43,45 @@ class CartController extends Controller
         $cart = new CartService();
         $product = Product::find($request->product_id);
 
-        if ($product) {
-            $cart->addCartItem($product->id, $request->quantity);
+        if ($product && $product->quantity > $request->quantity) {
+            return response()->json([
+                "message" => $cart->addCartItem($product->id, $request->quantity)->getCartItems()
+            ]);
         }
 
+        return response()->json([
+            "message" => 'cannot find product'
+        ], 404);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  Request $request
+     * @return JsonResponse
+     */
+    public function moveCart(Request $request): JsonResponse
+    {
+        $cart = new CartService();
+        $cart->moveCartIntoDatabase();
 
         return response()->json([
-            "cartItems" => $cart->getCartItems(),
+            "message" => 'cart has been moved'
         ]);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return JsonResponse
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return JsonResponse
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  Request  $request
-     * @param  int  $id
-     * @return JsonResponse
-     */
-    public function update(Request $request, $id)
-    {
-        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
      * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy()
     {
-        //
+        $cart = new CartService();
+        $cart->clearCart();
+
+        return response()->json([
+            "message" => "Cart has been cleared"
+        ]);
     }
 }
