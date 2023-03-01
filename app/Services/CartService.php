@@ -32,7 +32,7 @@ class CartService
   public function getCartProducts()
   {
     $ids = Arr::pluck($this->cartItems, 'product_id');
-    return $products = Product::whereIn('id', $ids)->get()->map(function ($product) {
+    return Product::whereIn('id', $ids)->get()->map(function ($product) {
       return [
         'id' => $product->id,
         'name' => $product->name,
@@ -110,12 +110,14 @@ class CartService
   private function resetCartDatabase()
   {
     $items = CartItem::where('user_id', "=", $this->user->id);
-    $items ? $items->delete() : null;
+    if ($items) {
+      $items->delete();
+    }
   }
 
   private function resetCartCookie()
   {
-    Cookie::forget('cart_items');
+    Cookie::queue('cart_items', "[]", 0);
   }
 
   private function saveCartItemInDatabase($productId, $quantity)

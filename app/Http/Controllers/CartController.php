@@ -18,17 +18,22 @@ class CartController extends Controller
     public function index()
     {
         $cart = new CartService();
-        $cartItems = $cart->getCartItems();
+        $cartItems = $cart->getCartProducts();
 
+        return response()->json(["cartItems" => $cartItems]);
+    }
 
-        // $cartItems = Arr::keyBy($cartItems, 'product_id');
+    /**
+     * Display a listing of the resource.
+     *
+     * @return JsonResponse
+     */
+    public function productsCount()
+    {
+        $cart = new CartService();
+        $itemsCount = $cart->getCartItemsCount();
 
-        // $total = 0;
-        // foreach ($products as $product) {
-        //     $total += $product->price * $cartItems[$product->id]['quantity'];
-        // }
-
-        return response()->json(compact("cartItems"));
+        return response()->json(["itemsCount" => $itemsCount]);
     }
 
 
@@ -75,13 +80,13 @@ class CartController extends Controller
      *
      * @return JsonResponse
      */
-    public function destroy()
+    public function clearCart()
     {
         $cart = new CartService();
         $cart->clearCart();
 
         return response()->json([
-            "message" => "Cart has been cleared"
+            "message" => "asdasd"
         ]);
     }
 }
