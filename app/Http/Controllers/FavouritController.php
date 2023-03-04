@@ -16,7 +16,7 @@ class FavouritController extends Controller
      */
     public function index()
     {
-        $collection = FavouritCollection::where("user_id", Auth::user()->id)->get();
+        $collection = FavouritCollection::where("user_id", Auth::user()->id)->with('products')->get();
         return response()->json(["favourit" => $collection]);
     }
 

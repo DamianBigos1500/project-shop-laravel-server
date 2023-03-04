@@ -38,6 +38,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource('products', ProductsController::class)->only(['create', 'store', 'update', 'destroy']);
     Route::resource('favourit', FavouritController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('favourit-product', FavouritProductController::class)->only(['index', 'store', 'update']);
-    Route::resource('/favourit-product/{favouritCollection}/{product}', FavouritProductController::class)->only(['destroy']);
+    Route::delete('/favourit-product/{favouritCollection}/{product}', [FavouritProductController::class, 'destroy']);
     Route::resource('reviews', ProductReviewController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
 });
