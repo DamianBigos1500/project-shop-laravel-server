@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create("product_favourit", function(Blueprint $table){
+        Schema::create("favourit_collection_product", function(Blueprint $table){
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('favourit_collection_id');
 

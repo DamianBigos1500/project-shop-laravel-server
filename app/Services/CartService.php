@@ -103,12 +103,18 @@ class CartService
       $items = $this->getCookieCartItems();
 
       foreach ($items as $item) {
-        $this->saveCartItemInDatabase($item["product_id"], $item["quantity"]);
+        $newItem = new CartItem([
+          'user_id' => $this->user->id,
+          "product_id" => $item["product_id"],
+          "quantity" => $item["quantity"]
+        ]);
+        $this->saveCartItemInDatabase($newItem);
       }
 
       $this->resetCartCookie();
     }
   }
+
 
   public function clearCart()
   {
@@ -119,6 +125,24 @@ class CartService
     }
     return new CartService();
   }
+
+  public function removeCartItem($productId)
+  {
+    if ($this->user) {
+      $item = CartItem::where(['user_id' => $this->user->id, "product_id" => $productId])->first();
+      $item ? $item->delete() : null;
+      $this->cartItems = $this->getDatabaseCartItems();
+    } else {
+      $items = $this->cartItems;
+      $item = $items->firstWhere("product_id", $productId);
+      $items = $items->reject(fn ($item) => $productId == $item["product_id"]);
+      $this->saveCartItemInCookie($items);
+      $this->cartItems = $items;
+    }
+    return new CartService();
+  }
+
+
 
   private function resetCartDatabase()
   {

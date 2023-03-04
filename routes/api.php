@@ -8,6 +8,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\FavouritController;
+use App\Http\Controllers\FavouritProductController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -23,7 +24,7 @@ Route::get('/index', [IndexController::class, "index"]);
 
 
 // Cart
-Route::resource('cart', CartController::class)->only(['index', 'store']);
+Route::resource('cart', CartController::class)->only(['index', 'store', 'destroy']);
 Route::delete('/cart', [CartController::class, "clearCart"]);
 Route::get('/cart-count', [CartController::class, "productsCount"]);
 Route::post('/move-cart', [CartController::class, "moveCart"]);
@@ -36,5 +37,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource('categories', CategoriesController::class)->only(['store', 'show', 'update', 'destroy']);
     Route::resource('products', ProductsController::class)->only(['create', 'store', 'update', 'destroy']);
     Route::resource('favourit', FavouritController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('favourit-product', FavouritProductController::class)->only(['index', 'store', 'update']);
+    Route::resource('/favourit-product/{favouritCollection}/{product}', FavouritProductController::class)->only(['destroy']);
     Route::resource('reviews', ProductReviewController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
 });

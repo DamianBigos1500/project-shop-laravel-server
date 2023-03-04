@@ -81,4 +81,22 @@ class CartController extends Controller
             "cart" => $cart->getCartProducts()
         ]);
     }
+
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  Request $request
+     * @return JsonResponse
+     */
+    public function destroy(Request $request, int $id): JsonResponse
+    {
+        $cart = new CartService();
+        $cart->removeCartItem($id);
+
+        return response()->json([
+            "cartItems" => $cart->getCartProducts(),
+            "cartCount" => $cart->getCartItemsCount()
+        ]);
+    }
 }
