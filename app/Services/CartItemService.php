@@ -1,21 +1,19 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Services;
 
 use App\Models\Product;
 
 class CartItemService
 {
   private int $product_id;
-  private int $user_id;
-  private int $quantity = 0;
+  private int $quantity;
 
 
-  public function __construct(int $product_id, int $user_id = null, int $quantity = 1)
+  public function __construct(int $product_id, int $quantity)
   {
     $this->product_id = $product_id;
-    $this->user_id = $user_id;
-    $this->quantity += $quantity;
+    $this->quantity = $quantity;
   }
 
   public function getProductId(): int
@@ -38,6 +36,6 @@ class CartItemService
 
   public function addQuantity($product_id, $quantity): CartItemService
   {
-    return new CartItemService($product_id, $this->user_id, $quantity);
+    return new CartItemService($product_id, $quantity);
   }
 }

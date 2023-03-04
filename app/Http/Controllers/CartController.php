@@ -15,27 +15,15 @@ class CartController extends Controller
      *
      * @return JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $cart = new CartService();
-        $cartItems = $cart->getCartProducts();
 
-        return response()->json(["cartItems" => $cartItems]);
+        return response()->json([
+            "cartItems" => $cart->getCartProducts(),
+            "cartCount" => $cart->getCartItemsCount()
+        ]);
     }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return JsonResponse
-     */
-    public function productsCount()
-    {
-        $cart = new CartService();
-        $itemsCount = $cart->getCartItemsCount();
-
-        return response()->json(["itemsCount" => $itemsCount]);
-    }
-
 
     /**
      * Store a newly created resource in storage.
@@ -49,8 +37,11 @@ class CartController extends Controller
         $product = Product::find($request->product_id);
 
         if ($product && $product->quantity > $request->quantity) {
+            $cart->addCartItem($product->id, $request->quantity);
+
             return response()->json([
-                "message" => $cart->addCartItem($product->id, $request->quantity)->getCartItems()
+                "cartItems" => $cart->getCartProducts(),
+                "cartCount" => $cart->getCartItemsCount()
             ]);
         }
 
@@ -71,7 +62,8 @@ class CartController extends Controller
         $cart->moveCartIntoDatabase();
 
         return response()->json([
-            "message" => 'cart has been moved'
+            "cartItems" => $cart->getCartProducts(),
+            "cartCount" => $cart->getCartItemsCount()
         ]);
     }
 
@@ -86,7 +78,7 @@ class CartController extends Controller
         $cart->clearCart();
 
         return response()->json([
-            "message" => "asdasd"
+            "cart" => $cart->getCartProducts()
         ]);
     }
 }
