@@ -32,14 +32,24 @@ class CartService
   public function getCartProducts()
   {
     $ids = Arr::pluck($this->cartItems, 'product_id');
+
+
+
     return Product::whereIn('id', $ids)->get()->map(function ($product) {
+      $quantity = 1;
+      if ($this->user) {
+        $quantity = CartItem::where(['user_id' => $this->user->id, "product_id" => $product->id])->first()->quantity;
+      } else {
+        $quantity = $this->cartItems->where("product_id", $product->id)->first()["quantity"];
+      }
+
       return [
         'id' => $product->id,
         'name' => $product->name,
         'regular_price' => $product->regular_price,
         'discount_price' => $product->discount_price,
         'picture' => $product->images[0]->filename,
-        'quantity' => $this->cartItems->where("product_id", $product->id)->first()["quantity"]
+        'quantity' => $quantity
       ];
     });
   }
@@ -69,15 +79,16 @@ class CartService
     return collect(json_decode(Cookie::get("cart_items", "[]"), true));
   }
 
-  public function addCartItem(int $productId, int $quantity = 1)
+  public function addCartItem(int $productId, int $quantity = 1, int $max_quantity)
   {
     if ($this->user) {
       $item = CartItem::where(['user_id' => $this->user->id, "product_id" => $productId])->first();
       $item ? $item->delete() : null;
+      $newQty = ($quantity + ($item?->quantity ?? 0)) < $max_quantity ? $quantity + $item?->quantity ?? 0 : $max_quantity;
       $newItem = new CartItem([
         'user_id' => $this->user->id,
         "product_id" => $productId,
-        "quantity" => $quantity + $item?->quantity ?? 0
+        "quantity" => $newQty,
       ]);
       if ($newItem->quantity > 0) $this->saveCartItemInDatabase($newItem);
       $this->cartItems = $this->getDatabaseCartItems();
@@ -85,9 +96,10 @@ class CartService
       $items = $this->cartItems;
       $item = $items->firstWhere("product_id", $productId);
       $items = $items->reject(fn ($item) => $productId == $item["product_id"]);
+      $newQty = ((isset($item["quantity"]) ? $item["quantity"] : 0) < $max_quantity) ? (isset($item["quantity"]) ? $item["quantity"] : 0) : $max_quantity;
       $newItem = [
         "product_id" => $productId,
-        "quantity" => $quantity + (isset($item["quantity"]) ? $item["quantity"] : 0)
+        "quantity" => $newQty
       ];
       if ($newItem["quantity"] > 0) $items->add($newItem);
       $this->saveCartItemInCookie($items);

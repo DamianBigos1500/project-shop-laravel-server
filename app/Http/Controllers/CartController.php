@@ -36,18 +36,17 @@ class CartController extends Controller
         $cart = new CartService();
         $product = Product::find($request->product_id);
 
-        if ($product && $product->quantity > $request->quantity) {
-            $cart->addCartItem($product->id, $request->quantity);
-
+        if (!$product) {
             return response()->json([
-                "cartItems" => $cart->getCartProducts(),
-                "cartCount" => $cart->getCartItemsCount()
-            ]);
+                "message" => 'cannot find product'
+            ], 404);
         }
 
+        $cart->addCartItem($product->id, $request->quantity, $product->quantity);
         return response()->json([
-            "message" => 'cannot find product'
-        ], 404);
+            "cartItems" => $cart->getCartProducts(),
+            "cartCount" => $cart->getCartItemsCount()
+        ]);
     }
 
     /**
@@ -89,7 +88,7 @@ class CartController extends Controller
      * @param  Request $request
      * @return JsonResponse
      */
-    public function destroy(Request $request, int $id): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
         $cart = new CartService();
         $cart->removeCartItem($id);
