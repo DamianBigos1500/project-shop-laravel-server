@@ -6,7 +6,6 @@ use App\Models\Product;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Arr;
 
 class CartController extends Controller
 {
@@ -77,7 +76,7 @@ class CartController extends Controller
         $cart->clearCart();
 
         return response()->json([
-            "cart" => $cart->getCartProducts()
+            "message" => "Cart items removed succesfuly"
         ]);
     }
 

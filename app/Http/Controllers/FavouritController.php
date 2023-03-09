@@ -16,7 +16,7 @@ class FavouritController extends Controller
      */
     public function index()
     {
-        $collection = FavouritCollection::where("user_id", Auth::user()->id)->with('products.images')->get();
+        $collection = FavouritCollection::where("user_id", Auth::user()->id)->with('products.images')->orderBy('created_at', 'desc')->get();
         return response()->json(["favourit" => $collection]);
     }
 
@@ -28,8 +28,8 @@ class FavouritController extends Controller
      */
     public function store(Request $request)
     {
-
         $collection = FavouritCollection::create(["name" => $request->name, "user_id" => Auth::user()->id]);
+
         return response()->json(["favourit" => $collection]);
     }
 

@@ -83,24 +83,35 @@ class CartService
   {
     if ($this->user) {
       $item = CartItem::where(['user_id' => $this->user->id, "product_id" => $productId])->first();
-      $item ? $item->delete() : null;
-      $newQty = ($quantity + ($item?->quantity ?? 0)) < $max_quantity ? $quantity + $item?->quantity ?? 0 : $max_quantity;
+
+
+      $newQty = $quantity;
+      if ($item) {
+        $item->delete();
+        $newQty = (($quantity + $item->quantity) < $max_quantity) ? $quantity + $item->quantity : $max_quantity;
+      }
+
       $newItem = new CartItem([
         'user_id' => $this->user->id,
         "product_id" => $productId,
         "quantity" => $newQty,
       ]);
+
       if ($newItem->quantity > 0) $this->saveCartItemInDatabase($newItem);
       $this->cartItems = $this->getDatabaseCartItems();
     } else {
       $items = $this->cartItems;
       $item = $items->firstWhere("product_id", $productId);
       $items = $items->reject(fn ($item) => $productId == $item["product_id"]);
-      $newQty = ((isset($item["quantity"]) ? $item["quantity"] : 0) < $max_quantity) ? (isset($item["quantity"]) ? $item["quantity"] : 0) : $max_quantity;
+
+      $newQty = $quantity;
+      if (isset($item["quantity"]))
+        $newQty = (($item["quantity"] + $quantity) < $max_quantity) ? ($item["quantity"] + $quantity) : $max_quantity;
       $newItem = [
         "product_id" => $productId,
         "quantity" => $newQty
       ];
+
       if ($newItem["quantity"] > 0) $items->add($newItem);
       $this->saveCartItemInCookie($items);
       $this->cartItems = $items;
@@ -158,10 +169,7 @@ class CartService
 
   private function resetCartDatabase()
   {
-    $items = CartItem::where('user_id', "=", $this->user->id);
-    if ($items) {
-      $items->delete();
-    }
+    $items = CartItem::where('user_id', "=", $this->user->id)->delete();
   }
 
   private function resetCartCookie()
