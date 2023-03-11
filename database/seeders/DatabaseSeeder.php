@@ -2,14 +2,15 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Database\Seeders\UsersTableSeeder;
 use Database\Seeders\ProductsTableSeeder;
 use Database\Seeders\CategoriesTableSeeder;
 use Database\Seeders\CategoryImageSeeder;
 use Database\Seeders\ProductCategoryTableSeeder;
 use Database\Seeders\RatingsTableSeeder;
-use Database\Seeders\FeaturedProductsColumnSeeder;
+use Database\Seeders\OrdersTableSeeder;
+use Database\Seeders\OrderItemsTableSeeder;
+use Database\Seeders\OrderToOrderItemsAssociationSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -28,7 +29,9 @@ class DatabaseSeeder extends Seeder
             CategoryImageSeeder::class,
             ProductCategoryTableSeeder::class,
             RatingsTableSeeder::class,
-            // FeaturedProductsColumnSeeder::class,
+            OrdersTableSeeder::class,
+            OrderItemsTableSeeder::class,
+            OrderToOrderItemsAssociationSeeder::class,
         ]);
     }
 }

@@ -20,7 +20,7 @@ class CartController extends Controller
 
         return response()->json([
             "cartItems" => $cart->getCartProducts(),
-            "cartCount" => $cart->getCartItemsCount()
+            "cartCount" => $cart->getCartItemsCount(),
         ]);
     }
 

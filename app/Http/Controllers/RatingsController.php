@@ -48,11 +48,40 @@ class RatingsController extends Controller
      * @param  int  $id
      * @return JsonResponse
      */
-    public function show(int $id): JsonResponse
+    public function show(Request $request, int $id): JsonResponse
     {
-        $ratings = Rating::where("product_id", $id)->with("user")->get();
 
-        return response()->json(["ratings" => $ratings]);
+        $sort = $request->query("sort") ?? 0;
+        $rating = $request->query("rating") ?? 0;
+        $confirmed = $request->query("confirmed") ?? 0;
+
+        $ratings = Rating::query()->where("product_id", $id);
+
+        if ($rating) {
+            $ratings->where([["rating", ">=", $rating * 2], ["rating", "<=", $rating * 2 + 1]]);
+        }
+
+        if ($confirmed) {
+            if (+$confirmed == 1)
+                $ratings = $ratings->where("status", "=", 1);
+        }
+
+        if ($sort == 0) {
+            $ratings = $ratings->orderBy('created_at', 'desc');
+        }
+        if ($sort == 1)
+            $ratings = $ratings->orderBy('rating', 'desc');
+        else
+            $ratings = $ratings->orderBy('created_at', 'asc');
+
+        $ratings = $ratings->with("user")->get();
+
+        return response()->json([
+            "ratings" => $ratings,
+            "sort" => $sort,
+            "rating" => $rating,
+            "confirmed" => $confirmed
+        ]);
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\RatingsController;
 use App\Http\Controllers\FavouritController;
 use App\Http\Controllers\FavouritProductController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -29,6 +30,7 @@ Route::delete('/cart', [CartController::class, "clearCart"]);
 Route::get('/cart-count', [CartController::class, "productsCount"]);
 Route::post('/move-cart', [CartController::class, "moveCart"]);
 
+Route::resource('orders', OrderController::class)->only(['index', 'store', 'show']);
 Route::resource('ratings', RatingsController::class)->only(["show", "store", "destroy"]);
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
