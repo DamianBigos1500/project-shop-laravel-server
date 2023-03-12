@@ -27,6 +27,13 @@ class RatingsController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        $user = Auth::user();
+        if ($user) {
+            $rate = Rating::where([["product_id", $request->product_id], ["user_id", $user->id]])->first();
+            if ($rate)
+                return response()->json(["message" => 'You already reviewed this product']);
+        }
+
         $newRating = Rating::create([
             "product_id" => $request->product_id,
             "user_id" =>  Auth::user()->id,
@@ -39,9 +46,6 @@ class RatingsController extends Controller
     }
 
 
-
-
-
     /**
      * Display the specified ratings depends on ProductId.
      *
@@ -50,7 +54,6 @@ class RatingsController extends Controller
      */
     public function show(Request $request, int $id): JsonResponse
     {
-
         $sort = $request->query("sort") ?? 0;
         $rating = $request->query("rating") ?? 0;
         $confirmed = $request->query("confirmed") ?? 0;
@@ -88,12 +91,21 @@ class RatingsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  Rating $rating
      * @return JsonResponse
      */
-    public function update(Request $request, $id): JsonResponse
+    public function update(Request $request, Rating $rating): JsonResponse
     {
-        return response()->json(["ratings" => []]);
+        if ($rating->user_id != Auth::user()->id) {
+            return response()->json(["message" => "This review not belongs to you"]);
+        }
+
+        $rating->update([
+            "review" =>   $request->review,
+            "rating" =>  $request->rating,
+        ]);
+
+        return response()->json(["rating" => $rating]);
     }
 
     /**
@@ -102,8 +114,14 @@ class RatingsController extends Controller
      * @param  int  $id
      * @return JsonResponse
      */
-    public function destroy($id): JsonResponse
+    public function destroy(Rating $rating): JsonResponse
     {
-        return response()->json(["ratings" => []]);
+        if ($rating->user_id != Auth::user()->id) {
+            return response()->json(["message" => "This review not belongs to you"], 401);
+        }
+
+        $rating->delete();
+
+        return response()->json(["message" => "review has been removed"]);
     }
 }

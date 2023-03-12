@@ -46,4 +46,9 @@ class Product extends Model
     {
         return $this->belongsToMany(FavouritCollection::class);
     }
+
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(Rating::class);
+    }
 }

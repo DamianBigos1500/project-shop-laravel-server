@@ -31,7 +31,7 @@ Route::get('/cart-count', [CartController::class, "productsCount"]);
 Route::post('/move-cart', [CartController::class, "moveCart"]);
 
 Route::resource('orders', OrderController::class)->only(['index', 'store', 'show']);
-Route::resource('ratings', RatingsController::class)->only(["show", "store", "destroy"]);
+Route::resource('ratings', RatingsController::class)->only(["show", "store", "update", "destroy"]);
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get("user", [UsersController::class, 'getUser']);

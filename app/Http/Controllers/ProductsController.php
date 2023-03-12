@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpsertProductRequest;
-use App\Models\Category;
 use App\Models\Product;
 use App\Models\Image;
 use Exception;
@@ -22,7 +21,7 @@ class ProductsController extends Controller
     public function index(): JsonResponse
     {
         return response()->json([
-            'products' => Product::with("images")->paginate(10),
+            'products' => Product::with(["images", "ratings"])->paginate(20),
         ], 200);
     }
 
@@ -38,19 +37,6 @@ class ProductsController extends Controller
         ], 200);
     }
 
-    /**
-     * Display a listing of paths.
-     *
-     * @return JsonResponse
-     */
-    public function create(): JsonResponse
-    {
-
-
-        return response()->json([
-            'categories' => Category::all()
-        ]);
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -87,20 +73,6 @@ class ProductsController extends Controller
     {
         return response()->json([
             'product' => Product::with(["images", "category" => ['parent']])->find($product->id)
-        ], 200);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  Request  $request
-     * @param  Product  $product
-     * @return JsonResponse
-     */
-    public function update(Request $request, Product  $product): JsonResponse
-    {
-        return response()->json([
-            'product' => $product
         ], 200);
     }
 
