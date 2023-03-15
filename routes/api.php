@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\admin\UsersAdminController;
 use App\Http\Controllers\AdvertiseCarouselController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoriesController;
@@ -42,4 +43,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource('favourit', FavouritController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('favourit-product', FavouritProductController::class)->only(['index', 'store', 'update']);
     Route::delete('/favourit-product/{favouritCollection}/{product}', [FavouritProductController::class, 'destroy']);
+});
+
+
+Route::middleware(["auth:sanctum"])->group(function () {
+    Route::resource('admin/users', UsersAdminController::class)->only(["index", 'store', 'show', 'destroy']);
 });

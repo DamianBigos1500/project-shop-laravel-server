@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use  \Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class CategoriesController extends Controller
 {
@@ -16,8 +17,11 @@ class CategoriesController extends Controller
      */
     public function index()
     {
+        $categories = Category::where("parent_id", 0)->with("children")->get();
+        // $categories = DB::table("categories")->join("")->where("parent_id", 0)->get(["id", "title", "category_slug"]);
+
         return response()->json([
-            'categories' => Category::where("parent_id", 0)->with("children")->get()
+            'categories' => $categories
         ]);
     }
 
