@@ -29,11 +29,30 @@ class CartService
     );
   }
 
+  public function getProductsIds()
+  {
+    return Arr::pluck($this->cartItems, 'product_id');
+  }
+
+  public function getCartValue()
+  {
+    $ids = $this->getProductsIds();
+
+    return Product::whereIn('id', $ids)->get()->sum(function ($product) {
+      $quantity = 1;
+      if ($this->user) {
+        $quantity = CartItem::where(['user_id' => $this->user->id, "product_id" => $product->id])->first()->quantity;
+      } else {
+        $quantity = $this->cartItems->where("product_id", $product->id)->first()["quantity"];
+      }
+
+      return $quantity * ($product->discount_price ?? $product->regular_price);
+    });
+  }
+
   public function getCartProducts()
   {
-    $ids = Arr::pluck($this->cartItems, 'product_id');
-
-
+    $ids = $this->getProductsIds();
 
     return Product::whereIn('id', $ids)->get()->map(function ($product) {
       $quantity = 1;
@@ -84,7 +103,6 @@ class CartService
     if ($this->user) {
       $item = CartItem::where(['user_id' => $this->user->id, "product_id" => $productId])->first();
 
-
       $newQty = $quantity;
       if ($item) {
         $item->delete();
@@ -116,7 +134,7 @@ class CartService
       $this->saveCartItemInCookie($items);
       $this->cartItems = $items;
     }
-    return new CartService();
+    return $newQty;
   }
 
   public function moveCartIntoDatabase()

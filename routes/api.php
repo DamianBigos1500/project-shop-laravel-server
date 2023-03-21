@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\admin\CategoriesAdminController;
+use App\Http\Controllers\admin\ProductImagesAdminController;
+use App\Http\Controllers\admin\ProductsAdminController;
 use App\Http\Controllers\admin\UsersAdminController;
 use App\Http\Controllers\AdvertiseCarouselController;
 use App\Http\Controllers\CartController;
@@ -13,14 +16,14 @@ use App\Http\Controllers\FavouritProductController;
 use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
-
 Route::get("inde", [IndexController::class, "getStrage"]);
 
 Route::get("products-paths", [ProductsController::class, "getProductPaths"]);
 Route::resource('products', ProductsController::class)->only(['index', 'show']);
 Route::resource('categories', CategoriesController::class)->only(['index']);
 Route::get('category-slug/{slug}', [CategoriesController::class, 'getCategoryBySlug']);
-Route::get('products-category/{slug}', [CategoriesController::class, 'getProductsByCategory']);
+Route::get('products-category/{slug}', [ProductsController::class, 'getProductsByCategory']);
+Route::get('products-search', [ProductsController::class, 'getSearchedProducts']);
 
 Route::get('/index', [IndexController::class, "index"]);
 
@@ -39,13 +42,17 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource("advertise-carousel", AdvertiseCarouselController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('users', UsersController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('categories', CategoriesController::class)->only(['store', 'show', 'update', 'destroy']);
-    Route::resource('products', ProductsController::class)->only(['create', 'store', 'update', 'destroy']);
     Route::resource('favourit', FavouritController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('favourit-product', FavouritProductController::class)->only(['index', 'store', 'update']);
     Route::delete('/favourit-product/{favouritCollection}/{product}', [FavouritProductController::class, 'destroy']);
 });
 
+Route::middleware(["auth:sanctum"])->prefix("admin")->group(function () {
+    Route::resource('/users', UsersAdminController::class)->only(["index", 'store', 'show', 'destroy']);
 
-Route::middleware(["auth:sanctum"])->group(function () {
-    Route::resource('admin/users', UsersAdminController::class)->only(["index", 'store', 'show', 'destroy']);
+    Route::resource('/products', ProductsAdminController::class)->only(["index", 'store', 'show', 'update', 'destroy']);
+    Route::resource('/product-images', ProductImagesAdminController::class)->only(["index", 'store', 'destroy']);
+
+    Route::resource('/categories', CategoriesAdminController::class)->only(["index", 'store', 'show', 'destroy']);
+    Route::get('/categories-children', [CategoriesAdminController::class, "getCategoriesChildren"]);
 });

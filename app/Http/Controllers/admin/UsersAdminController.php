@@ -78,13 +78,15 @@ class UsersAdminController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  User $user
      * @return JsonResponse
      */
-    public function destroy($id): JsonResponse
+    public function destroy(User $user): JsonResponse
     {
+        $user->delete();
+
         return response()->json([
-            "user" => '$user'
+            "message" => 'User has succesfully been deleted'
         ]);
     }
 }

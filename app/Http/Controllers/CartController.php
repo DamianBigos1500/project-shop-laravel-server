@@ -21,6 +21,7 @@ class CartController extends Controller
         return response()->json([
             "cartItems" => $cart->getCartProducts(),
             "cartCount" => $cart->getCartItemsCount(),
+            "cartTotalSum" => $cart->getCartValue()
         ]);
     }
 
@@ -41,10 +42,14 @@ class CartController extends Controller
             ], 404);
         }
 
-        $cart->addCartItem($product->id, $request->quantity, $product->quantity);
+
+
+        $itemQty = $cart->addCartItem($product->id, $request->quantity, $product->quantity);
         return response()->json([
             "cartItems" => $cart->getCartProducts(),
-            "cartCount" => $cart->getCartItemsCount()
+            "cartCount" => $cart->getCartItemsCount(),
+            "cartTotalSum" => $cart->getCartValue(),
+            "itemQty" => $itemQty
         ]);
     }
 
@@ -61,7 +66,8 @@ class CartController extends Controller
 
         return response()->json([
             "cartItems" => $cart->getCartProducts(),
-            "cartCount" => $cart->getCartItemsCount()
+            "cartCount" => $cart->getCartItemsCount(),
+            "cartTotalSum" => $cart->getCartValue()
         ]);
     }
 
@@ -94,7 +100,8 @@ class CartController extends Controller
 
         return response()->json([
             "cartItems" => $cart->getCartProducts(),
-            "cartCount" => $cart->getCartItemsCount()
+            "cartCount" => $cart->getCartItemsCount(),
+            "cartTotalSum" => $cart->getCartValue()
         ]);
     }
 }

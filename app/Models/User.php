@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -57,5 +58,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function FavoutitCollection(): HasMany
     {
         return $this->hasMany(UserDetails::class);
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === UserRole::ADMIN;
     }
 }

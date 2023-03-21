@@ -48,17 +48,6 @@ class CategoriesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return JsonResponse
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
      * @param  string  $slug
      * @return JsonResponse
      */
@@ -69,20 +58,4 @@ class CategoriesController extends Controller
         ]);
     }
 
-    /**
-     * Get products by category id
-     *
-     * @param  string $slug
-     * @return JsonResponse
-     */
-    public function getProductsByCategory(string $slug)
-    {
-        $category = Category::where('category_slug', $slug)->with("parent")->firstOrFail();
-        $products = Product::where("category_id", $category->id)->with(["images", "ratings"])->paginate(18);
-
-        return response()->json([
-            "products" =>  $products,
-            "category" =>  $category
-        ]);
-    }
 }

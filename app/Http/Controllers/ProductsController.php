@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpsertProductRequest;
+use App\Models\Category;
 use App\Models\Product;
-use App\Models\Image;
-use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProductsController extends Controller
 {
@@ -25,43 +21,17 @@ class ProductsController extends Controller
         ], 200);
     }
 
-    /**
-     * Display a listing of paths.
-     *
-     * @return JsonResponse
-     */
-    public function getProductPaths(): JsonResponse
-    {
-        return response()->json([
-            'productsPaths' => Product::select("id")->get()->map(fn ($prod) => ["params" => ["id" => strval($prod->id)]]),
-        ], 200);
-    }
-
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  Request  $request
-     * @return JsonResponse
-     */
-    public function store(UpsertProductRequest $request): JsonResponse
-    {
-        $product = Product::create([
-            "name" => $request->name,
-            "details" => $request->details,
-        ]);
-
-        if ($request->hasFile('images')) {
-            foreach ($request->images as $image) {
-                $imagePath = $image->store('images/products');
-                Image::create(["filename" => $imagePath, 'product_id' => $product->id]);
-            }
-        }
-
-        return response()->json([
-            "product" => $product,
-        ], 201);
-    }
+    // /**
+    //  * Display a listing of paths.
+    //  *
+    //  * @return JsonResponse
+    //  */
+    // public function getProductPaths(): JsonResponse
+    // {
+    //     return response()->json([
+    //         'productsPaths' => Product::select("id")->get()->map(fn ($prod) => ["params" => ["id" => strval($prod->id)]]),
+    //     ], 200);
+    // }
 
     /**
      * Display the specified resource.
@@ -77,28 +47,52 @@ class ProductsController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  Product  $product
+     * Custom Routes functions
+     * 
+     */
+
+    /**
+     * Get products by category id
+     * @param  string $slug
      * @return JsonResponse
      */
-    public function destroy(Product $product): JsonResponse
+    public function getProductsByCategory(string $slug)
     {
-        try {
-            $images = $product->images;
+        $category = Category::where('category_slug', $slug)->with("parent")->firstOrFail();
+        $products = Product::where("category_id", $category->id)->with(["images", "ratings"])->paginate(18);
 
-            foreach ($images as $image) {
-                Storage::delete($image->filename);
-            }
-            $product->delete();
+        return response()->json([
+            "products" =>  $products,
+            "category" =>  $category
+        ]);
+    }
 
-            return response()->json([
-                'product' => $product
-            ], 202);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Cannot remove product!',
-            ], 500);
-        }
+    /**
+     * Get products by category id
+     * @return JsonResponse
+     */
+    public function getSearchedProducts()
+    {
+        $products = Product::query()->with(["images"])->when(request('search'), function ($query) {
+            $query->where('name', "LIKE", '%' . request('search') . '%')
+                ->orWhere('slug', "LIKE", '%' . request('search') . '%')
+                ->orWhere('short_description', "LIKE", '%' . request('search') . '%')
+                ->orWhere('long_description', "LIKE", '%' . request('search') . '%');
+        })->orWhereHas('category', function ($query) {
+            $query
+                ->where('title', "LIKE", '%' . request('search') . '%')
+                ->orWhere('category_slug', "LIKE", '%' . request('search') . '%');
+        })->orWhereHas('category.parent', function ($query) {
+            $query->where('title', "LIKE", '%' . request('search') . '%')
+                ->orWhere('category_slug', "LIKE", '%' . request('search') . '%');
+        })->take(20)->get([
+            "id", "category_id", "name", "slug", "product_code", "short_description",
+            "long_description", "regular_price", "discount_price", "is_available", "quantity", "featured"
+        ]);
+
+        return response()->json([
+            "products" => $products,
+            "productsCount" => $products->count(),
+        ]);
     }
 }
