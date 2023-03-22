@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -49,7 +48,7 @@ class UsersController extends Controller
      * @param  int  $id
      * @return JsonResponse
      */
-    public function update(UpdateUserRequest $request, User $user): JsonResponse
+    public function update(Request $request, User $user): JsonResponse
     {
         $validated = $request->validated();
 

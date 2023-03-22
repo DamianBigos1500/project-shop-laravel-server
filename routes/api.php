@@ -35,6 +35,7 @@ Route::get('/cart-count', [CartController::class, "productsCount"]);
 Route::post('/move-cart', [CartController::class, "moveCart"]);
 
 Route::resource('orders', OrderController::class)->only(['index', 'store', 'show']);
+Route::post('orders-paypal/{id}', [OrderController::class, "setOrderPaypal"]);
 Route::resource('ratings', RatingsController::class)->only(["show", "store", "update", "destroy"]);
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
