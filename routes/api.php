@@ -48,7 +48,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 });
 
 Route::middleware(["auth:sanctum"])->prefix("admin")->group(function () {
-    Route::resource('/users', UsersAdminController::class)->only(["index", 'store', 'show', 'destroy']);
+    Route::resource('/users', UsersAdminController::class)->only(["index", 'store', 'show', 'update', 'destroy']);
 
     Route::resource('/products', ProductsAdminController::class)->only(["index", 'store', 'show', 'update', 'destroy']);
     Route::resource('/product-images', ProductImagesAdminController::class)->only(["index", 'store', 'destroy']);

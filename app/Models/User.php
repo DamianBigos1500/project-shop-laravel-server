@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -27,7 +28,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'surname',
         'phone_number',
-        'user_profile',
         'role',
     ];
 
@@ -58,6 +58,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function FavoutitCollection(): HasMany
     {
         return $this->hasMany(UserDetails::class);
+    }
+
+    public function profileImage(): MorphOne
+    {
+        return $this->morphOne(Image::class, 'imageable');
     }
 
     public function isAdmin()

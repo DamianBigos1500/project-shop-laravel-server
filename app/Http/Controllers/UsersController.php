@@ -32,34 +32,12 @@ class UsersController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return  JsonResponse
-     */
-    public function store(Request $request): JsonResponse
-    {
-        return response()->json([]);
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
      * @return JsonResponse
      */
     public function show($id)
-    {
-        return response()->json([]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return JsonResponse
-     */
-    public function edit($id)
     {
         return response()->json([]);
     }
@@ -73,31 +51,24 @@ class UsersController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        $userValidated = $request->validated();
+        $validated = $request->validated();
 
         $user->update([]);
         return response()->json([]);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return JsonResponse
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getUser(Request $request)
     {
-        return $request->user();
+
+        return response()->json([
+            'user' => $request->user(),
+            'profileImage' => $request->user()->profileImage
+        ]);
     }
 }

@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreUserAdminRequest;
+use App\Http\Requests\admin\StoreUserAdminRequest;
+use App\Http\Requests\admin\UpdateUserAdminRequest;
+use App\Models\Image;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class UsersAdminController extends Controller
 {
@@ -18,7 +19,7 @@ class UsersAdminController extends Controller
      */
     public function index(): JsonResponse
     {
-        $users = User::get();
+        $users = User::with('profileImage')->get();
 
         return response()->json([
             "users" => $users
@@ -33,18 +34,26 @@ class UsersAdminController extends Controller
      */
     public function store(StoreUserAdminRequest $request): JsonResponse
     {
+        $validated = $request->validated();
         $user = User::create(
             [
-                "id" => 1,
-                'name' => 'Damian',
-                'email' => 'w@w2.com',
-                'email_verified_at' => now(),
-                'password' => bcrypt("12345678"),
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'surname' => $validated['surname'],
+                'phone_number' => $validated['phone_number'],
+                'role' => $validated['role'],
+                'password' => bcrypt($validated['password']),
             ]
         );
 
+        if ($request->hasFile('profile_image')) {
+            $imagePath = $request->file('profile_image')->store('images/profile');
+            $img = new Image(["filename" =>  "/storage/" . $imagePath]);
+            $user->profileImage()->save($img);
+        }
+
         return response()->json([
-            "user" => $user
+            "user" => $user,
         ]);
     }
 
@@ -56,6 +65,8 @@ class UsersAdminController extends Controller
      */
     public function show(User $user): JsonResponse
     {
+        $user = User::with('profileImage')->find($user->id);
+
         return response()->json([
             "user" => $user
         ]);
@@ -64,14 +75,41 @@ class UsersAdminController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  UpdateUserAdminRequest $request
+     * @param  User $user
      * @return JsonResponse
      */
-    public function update(Request $request, $id): JsonResponse
+    public function update(UpdateUserAdminRequest $request, User $user): JsonResponse
     {
+        $validated = $request->validated();
+        $user->update(
+            [
+                'name' => $validated['name'],
+                'surname' => $validated['surname'],
+                'phone_number' => $validated['phone_number'],
+                'role' => $validated['role'],
+            ]
+        );
+
+        if (isset($validated['password'])) {
+            $user->password = bcrypt($validated['password']);
+            $user->save();
+        }
+
+        if ($request->hasFile('profile_image')) {
+            $imagePath = $request->file('profile_image')->store('images/profile');
+            $newImg = new Image(["filename" =>  "/storage/" . $imagePath]);
+            if ($user->profileImage) {
+                Storage::delete($user->profileImage->filename);
+                $user->profileImage()->delete();
+            }
+
+
+            $user->profileImage()->save($newImg);
+        }
+
         return response()->json([
-            "user" => '$user'
+            "user" => $user
         ]);
     }
 

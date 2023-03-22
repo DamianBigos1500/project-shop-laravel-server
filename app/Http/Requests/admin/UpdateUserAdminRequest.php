@@ -18,6 +18,19 @@ class UpdateUserAdminRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     *
+     * @return void
+     *             
+     * @throws \JsonException
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge(json_decode($this->payload, true, 512, JSON_THROW_ON_ERROR));
+    }
+
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -25,9 +38,14 @@ class UpdateUserAdminRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'name' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'surname' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'email' => ['sometimes', 'nullable', 'string', 'email', 'max:255'],
+            'phone_number' => ['sometimes', 'nullable',],
+            'role' => ['required'],
+            'password' => ['sometimes', 'nullable', 'confirmed', Rules\Password::defaults()],
+            'profile_image' => ['sometimes', 'nullable'],
+            'profile_image.*' => ['mimes:jpg,jpeg,png,bmp', 'max:20000']
         ];
     }
 }
