@@ -10,16 +10,6 @@ use Illuminate\Support\Facades\Auth;
 class RatingsController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return JsonResponse
-     */
-    public function index(): JsonResponse
-    {
-        return response()->json(["ratings" => []]);
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -77,7 +67,7 @@ class RatingsController extends Controller
         else
             $ratings = $ratings->orderBy('created_at', 'asc');
 
-        $ratings = $ratings->with("user")->get();
+        $ratings = $ratings->with("user.profileImage")->get();
 
         return response()->json([
             "ratings" => $ratings,

@@ -81,6 +81,7 @@ class ProductsAdminController extends Controller
 
         return response()->json([
             "product" => $product,
+            "data" => $product->ratingSum(),
         ]);
     }
 
@@ -146,5 +147,4 @@ class ProductsAdminController extends Controller
      *
      * @return JsonResponse
      */
-
 }

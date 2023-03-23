@@ -52,4 +52,35 @@ class Product extends Model
     {
         return $this->hasMany(Rating::class);
     }
+
+    public function ratingSum()
+    {
+        $ratingSum = $this->ratings->sum('rating') ?? 0;
+
+        if ($ratingSum) {
+            return $ratingSum / $this->ratings->count();
+        }
+        return 0;
+    }
+    public static function searchQuery()
+    {
+        return self::query()->when(request('search'), function ($query) {
+            $query->where('name', "LIKE", '%' . request('search') . '%')
+                ->orWhere('slug', "LIKE", '%' . request('search') . '%')
+                ->orWhere('short_description', "LIKE", '%' . request('search') . '%')
+                ->orWhere('long_description', "LIKE", '%' . request('search') . '%');
+        })->orWhereHas('category', function ($query) {
+            $query
+                ->where('title', "LIKE", '%' . request('search') . '%')
+                ->orWhere('category_slug', "LIKE", '%' . request('search') . '%');
+        })->orWhereHas('category.parent', function ($query) {
+            $query->where('title', "LIKE", '%' . request('search') . '%')
+                ->orWhere('category_slug', "LIKE", '%' . request('search') . '%');
+        });
+    }
+
+    public static function specificQueries()
+    {
+        return Product::query();
+    }
 }

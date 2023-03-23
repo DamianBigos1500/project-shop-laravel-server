@@ -26,6 +26,7 @@ class OrdersTableSeeder extends Seeder
                 'order_code' => Str::orderedUuid(),
                 'name' => "Damian",
                 'surname' => "Bigos",
+                'total_price' => 123.32,
                 'email' => "w@w.com",
                 'address' => "Kacwin, Kowolówka 3",
                 'zip_code' => "34-441",

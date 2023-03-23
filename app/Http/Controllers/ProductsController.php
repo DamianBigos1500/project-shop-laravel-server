@@ -16,8 +16,17 @@ class ProductsController extends Controller
 
     public function index(): JsonResponse
     {
+        $products = Product::specificQueries()->with(["category"])
+            ->when(request('subcategory'), function ($query) {
+                $query->where('category_id', +request('subcategory'));
+            })->when(request('category'), function ($query) {
+                $query->whereHas('category', function ($query) {
+                    return $query->where('parent_id', +request('category'));
+                });
+            })->with(["images", "ratings"])->get();
+
         return response()->json([
-            'products' => Product::with(["images", "ratings"])->paginate(20),
+            'products' => $products,
         ], 200);
     }
 
@@ -73,19 +82,7 @@ class ProductsController extends Controller
      */
     public function getSearchedProducts()
     {
-        $products = Product::query()->with(["images"])->when(request('search'), function ($query) {
-            $query->where('name', "LIKE", '%' . request('search') . '%')
-                ->orWhere('slug', "LIKE", '%' . request('search') . '%')
-                ->orWhere('short_description', "LIKE", '%' . request('search') . '%')
-                ->orWhere('long_description', "LIKE", '%' . request('search') . '%');
-        })->orWhereHas('category', function ($query) {
-            $query
-                ->where('title', "LIKE", '%' . request('search') . '%')
-                ->orWhere('category_slug', "LIKE", '%' . request('search') . '%');
-        })->orWhereHas('category.parent', function ($query) {
-            $query->where('title', "LIKE", '%' . request('search') . '%')
-                ->orWhere('category_slug', "LIKE", '%' . request('search') . '%');
-        })->take(20)->get([
+        $products = Product::searchQuery()->with(["images"])->take(20)->get([
             "id", "category_id", "name", "slug", "product_code", "short_description",
             "long_description", "regular_price", "discount_price", "is_available", "quantity", "featured"
         ]);
