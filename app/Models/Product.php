@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\DB;
 
 class Product extends Model
 {
@@ -64,23 +65,26 @@ class Product extends Model
     }
     public static function searchQuery()
     {
-        return self::query()->when(request('search'), function ($query) {
-            $query->where('name', "LIKE", '%' . request('search') . '%')
-                ->orWhere('slug', "LIKE", '%' . request('search') . '%')
-                ->orWhere('short_description', "LIKE", '%' . request('search') . '%')
-                ->orWhere('long_description', "LIKE", '%' . request('search') . '%');
-        })->orWhereHas('category', function ($query) {
-            $query
-                ->where('title', "LIKE", '%' . request('search') . '%')
-                ->orWhere('category_slug', "LIKE", '%' . request('search') . '%');
-        })->orWhereHas('category.parent', function ($query) {
-            $query->where('title', "LIKE", '%' . request('search') . '%')
-                ->orWhere('category_slug', "LIKE", '%' . request('search') . '%');
-        });
+        return Product::query()
+            ->when(request('search'), function ($query) {
+                $query->where(function ($query) {
+                    $query->where('name', "LIKE", '%' . request('search') . '%')
+                        ->orWhere('slug', "LIKE", '%' . request('search') . '%')
+                        ->orWhere('short_description', "LIKE", '%' . request('search') . '%')
+                        ->orWhere('long_description', "LIKE", '%' . request('search') . '%')
+                        ->orWhereHas('category', function ($query) {
+                            $query->where('title', "LIKE", '%' . request('search') . '%')
+                                ->orWhere('category_slug', "LIKE", '%' . request('search') . '%');
+                        })->orWhereHas('category.parent', function ($query) {
+                            $query->where('title', "LIKE", '%' . request('search') . '%')
+                                ->orWhere('category_slug', "LIKE", '%' . request('search') . '%');
+                        });
+                });
+            });
     }
 
-    public static function specificQueries()
+    public function getName()
     {
-        return Product::query();
+        return $this->name;
     }
 }

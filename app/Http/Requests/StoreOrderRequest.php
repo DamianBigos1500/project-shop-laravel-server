@@ -24,11 +24,14 @@ class StoreOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ["required"],
-            'surname' => ["required"],
-            'email' => ["required"],
-            'address' => ["required"],
-            'zip_code' => ["required"],
+            'name' => ["required", 'min:3', 'max:255'],
+            'surname' => ["required", 'min:3', 'max:255'],
+            'email' => ["required", 'email'],
+            'telephone' => ["required", "numeric"],
+            'street' => ["required", 'min:3', 'max:255'],
+            'address' => ["required",'max:255'],
+            'city' => ["required", 'min:3', 'max:255'],
+            'zip_code' => ["required", 'min:3', 'max:255'],
         ];
     }
 }

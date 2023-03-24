@@ -20,7 +20,10 @@ return new class extends Migration
             $table->string("name");
             $table->string("surname");
             $table->string("email");
+            $table->string("telephone");
+            $table->string("street");
             $table->string("address");
+            $table->string("city");
             $table->decimal("total_price");
             $table->string("zip_code");
             $table->enum("payment_method", OrderStatus::TYPES)->default(OrderStatus::NOT_PAID);

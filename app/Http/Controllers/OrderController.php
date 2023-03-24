@@ -8,7 +8,6 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Services\CartService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -23,7 +22,7 @@ class OrderController extends Controller
     public function index(): JsonResponse
     {
 
-        $orders = Order::where("email", Auth::user()->email)->with("orderItems.product")->get();
+        $orders = Order::where("email", Auth::user()->email)->with("orderItems.product")->orderBy("created_at", "desc")->get();
 
         return response()->json([
             "order" => $orders
@@ -54,8 +53,11 @@ class OrderController extends Controller
             "name" =>  $validated["name"],
             "surname" =>  $validated["surname"],
             "email" =>  $validated["email"],
-            'total_price' => $cart->getCartValue(),
+            "telephone" =>  $validated["telephone"],
+            "street" =>  $validated["street"],
             "address" =>  $validated["address"],
+            'city' => $validated["city"],
+            "total_price" =>  $cart->getCartValue(),
             "zip_code" =>  $validated["zip_code"],
         ]);
 
@@ -86,7 +88,7 @@ class OrderController extends Controller
      */
     public function show(string  $order_code)
     {
-        $order = Order::where("order_code", $order_code)->with("orderItems")->first();
+        $order = Order::where("order_code", $order_code)->with("orderItems.product.images")->first();
 
         return response()->json([
             "order" => $order
@@ -107,7 +109,6 @@ class OrderController extends Controller
             "order" => $order
         ]);
     }
-
 
     /**
      * Display the specified resource.

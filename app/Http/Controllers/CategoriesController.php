@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Product;
 use Illuminate\Http\Request;
 use  \Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 
 class CategoriesController extends Controller
 {
@@ -51,11 +49,23 @@ class CategoriesController extends Controller
      * @param  string  $slug
      * @return JsonResponse
      */
+    public function show(int $id)
+    {
+        return response()->json([
+            "category" => Category::with('parent')->find($id)
+        ]);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  string  $slug
+     * @return JsonResponse
+     */
     public function getCategoryBySlug(string $slug)
     {
         return response()->json([
             "category" => Category::where("category_slug", $slug)->with("children.categoryImage")->first()
         ]);
     }
-
 }

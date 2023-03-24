@@ -16,7 +16,7 @@ class ProductsTableSeeder extends Seeder
      */
     public function run()
     {
-        Product::factory(120)->create();
+        Product::factory(1200)->create();
 
         $products = Product::all();
         $files = Storage::allFiles("/images/imagesToSeed");

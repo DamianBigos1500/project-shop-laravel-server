@@ -35,9 +35,6 @@ class CategoriesTableSeeder extends Seeder
                 "title" => "Smarthome",
             ],
             [
-                "title" => "Lifestyle",
-            ],
-            [
                 "title" => "Trends & News",
             ],
             [
@@ -61,40 +58,76 @@ class CategoriesTableSeeder extends Seeder
                 "parent_id" => 1,
             ],
             [
-                "title" => "Desktops",
+                "title" => "Samsung",
                 "parent_id" => 2,
             ],
             [
-                "title" => "Desktops",
+                "title" => "Apple",
                 "parent_id" => 2,
             ],
             [
-                "title" => "Desktops",
+                "title" => "Huawei",
                 "parent_id" => 2,
             ],
             [
-                "title" => "Desktops",
+                "title" => "Cat",
                 "parent_id" => 2,
             ],
             [
-                "title" => "Desktops",
+                "title" => "Microphones",
                 "parent_id" => 3,
             ],
             [
-                "title" => "Desktops",
+                "title" => "Mouses",
                 "parent_id" => 3,
             ],
             [
-                "title" => "Desktops",
+                "title" => "Keyboards",
                 "parent_id" => 3,
             ],
             [
-                "title" => "Desktops",
-                "parent_id" => 3,
+                "title" => "Motherboards",
+                "parent_id" => 4,
             ],
             [
-                "title" => "Desktops",
-                "parent_id" => 3,
+                "title" => "Disc",
+                "parent_id" => 4,
+            ],
+            [
+                "title" => "Cameras",
+                "parent_id" => 4,
+            ],
+            [
+                "title" => "Cables",
+                "parent_id" => 4,
+            ],
+            [
+                "title" => "DVD",
+                "parent_id" => 5,
+            ],
+            [
+                "title" => "Spotify License",
+                "parent_id" => 5,
+            ],
+            [
+                "title" => "Gift Cards",
+                "parent_id" => 5,
+            ],
+            [
+                "title" => "Raspberry pi",
+                "parent_id" => 6,
+            ],
+            [
+                "title" => "LED LIGHTS",
+                "parent_id" => 6,
+            ],
+            [
+                "title" => "Tables",
+                "parent_id" => 6,
+            ],
+            [
+                "title" => "Vacuum cleaner",
+                "parent_id" => 6,
             ],
         ];
 

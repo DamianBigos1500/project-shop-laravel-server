@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
 {
@@ -16,31 +17,28 @@ class ProductsController extends Controller
 
     public function index(): JsonResponse
     {
-        $products = Product::specificQueries()->with(["category"])
-            ->when(request('subcategory'), function ($query) {
-                $query->where('category_id', +request('subcategory'));
-            })->when(request('category'), function ($query) {
-                $query->whereHas('category', function ($query) {
-                    return $query->where('parent_id', +request('category'));
-                });
-            })->with(["images", "ratings"])->get();
+        $max_price = Product::max('regular_price');
+
+        $productsQuery = Product::searchQuery()->when(request('sub_category'), function ($query) {
+            $query->where('category_id', request('sub_category'));
+        })->when(request('category'), function ($query) {
+            $query->whereHas('category', function ($query) {
+                $query->where('parent_id', request('category'));
+            });
+        })->when(request('price_from') || request('price_to'), function ($query) use ($max_price) {
+            $query->whereBetween('regular_price', [request('price_from') ?? 0, request('price_to') ?? $max_price])
+                ->orWhereBetween('discount_price', [request('price_from') ?? 0, request('price_to') ?? $max_price]);
+        })->when(request('order_by'), function ($query) {
+            if (in_array(request('order_by'), DB::getSchemaBuilder()->getColumnListing('products')))
+                $query->orderBy(request('order_by'), request('order_method') ?? 'asc');
+        });
+
 
         return response()->json([
-            'products' => $products,
+            'productsCount' => $productsQuery->count(),
+            'products' => $productsQuery->with(["images", "ratings"])->paginate(18),
         ], 200);
     }
-
-    // /**
-    //  * Display a listing of paths.
-    //  *
-    //  * @return JsonResponse
-    //  */
-    // public function getProductPaths(): JsonResponse
-    // {
-    //     return response()->json([
-    //         'productsPaths' => Product::select("id")->get()->map(fn ($prod) => ["params" => ["id" => strval($prod->id)]]),
-    //     ], 200);
-    // }
 
     /**
      * Display the specified resource.
@@ -51,7 +49,8 @@ class ProductsController extends Controller
     public function show(Product $product): JsonResponse
     {
         return response()->json([
-            'product' => Product::with(["images", "category" => ['parent']])->find($product->id)
+            'productName' => $product->getName(),
+            'product' => Product::with(["images", "category" => ['parent']])->find($product->id),
         ], 200);
     }
 
