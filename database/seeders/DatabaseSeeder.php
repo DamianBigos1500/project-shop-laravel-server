@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             OrdersTableSeeder::class,
             OrderItemsTableSeeder::class,
             OrderToOrderItemsAssociationSeeder::class,
+            AdvertiseCarouselSeeder::class
         ]);
     }
 }

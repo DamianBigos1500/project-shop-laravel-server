@@ -15,10 +15,10 @@ class AdvertiseCarouselController extends Controller
      */
     public function index()
     {
-        $advertiseCarousel = AdvertiseCarousel::all();
+        $advertiseCarousel = AdvertiseCarousel::with('images')->get();
 
         return response()->json([
-            "carouser" => $advertiseCarousel,
+            "advertisment" => $advertiseCarousel,
         ]);
     }
 }

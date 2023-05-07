@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('image_carousels', function (Blueprint $table) {
+        Schema::create('advertise_carousels', function (Blueprint $table) {
             $table->id();
             $table->string("name", 255);
-            $table->string("link", 255);
+            $table->foreignId("product_id");
             $table->timestamps();
         });
     }

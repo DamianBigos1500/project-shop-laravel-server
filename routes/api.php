@@ -25,6 +25,7 @@ Route::get('products-category/{slug}', [ProductsController::class, 'getProductsB
 Route::get('products-search', [ProductsController::class, 'getSearchedProducts']);
 
 Route::get('/index', [IndexPageController::class, "index"]);
+Route::resource("advertise-carousel", AdvertiseCarouselController::class)->only(['index', 'store', 'update', 'destroy']);
 
 // Cart
 Route::resource('cart', CartController::class)->only(['index', 'store', 'destroy']);
@@ -40,7 +41,6 @@ Route::resource('ratings', RatingsController::class)->only(["show", "store", "up
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get("user", [UsersController::class, 'getUser']);
-    Route::resource("advertise-carousel", AdvertiseCarouselController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('categories', CategoriesController::class)->only(['store', 'update', 'destroy']);
     Route::resource('favourit', FavouritController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('favourit-product', FavouritProductController::class)->only(['index', 'store', 'update']);
